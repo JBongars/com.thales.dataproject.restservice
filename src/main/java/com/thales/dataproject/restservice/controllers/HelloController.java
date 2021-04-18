@@ -8,6 +8,7 @@ import com.thales.dataproject.restservice.models.EmployeeModel;
 import com.thales.dataproject.restservice.models.HelloModel;
 import com.thales.dataproject.restservice.services.HelloService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,8 @@ public class HelloController {
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
-    private HelloService helloService = new HelloService();
+    @Autowired
+    private HelloService helloService;
 
     @GetMapping("/hello")
     public HelloModel hello(@RequestParam(defaultValue = "World", required = false) String name,

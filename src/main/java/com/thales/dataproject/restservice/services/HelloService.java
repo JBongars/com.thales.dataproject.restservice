@@ -6,6 +6,9 @@ import com.thales.dataproject.restservice.DTO.EmployeeCreationDTO;
 import com.thales.dataproject.restservice.models.EmployeeModel;
 import com.thales.dataproject.restservice.models.HelloModel;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class HelloService {
     private HelloModel helloModel;
     private ArrayList<EmployeeModel> employees = new ArrayList<EmployeeModel>();
