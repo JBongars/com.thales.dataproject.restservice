@@ -4,7 +4,7 @@ orbs:
   maven: circleci/maven@1.1
 
 jobs:
-  build:
+  docker-build-and-deploy:
     docker:
       - image: "julien23/thalesdataproject:latest"
         auth:
@@ -12,6 +12,11 @@ jobs:
           password: $DOCKERHUB_PASSWORD # context / project UI env-var reference
     steps:
       - checkout
+      - setup_remote_docker:
+        version: 19.03.13
+        docker_layer_caching: true
+
+      # script
       - run: "docker build -t thalesdataproject:latest ."
       - run: "docker push julien23/thalesdataproject:latest"
 
