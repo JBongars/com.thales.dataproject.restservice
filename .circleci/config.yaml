@@ -1,0 +1,22 @@
+version: 2.1
+
+orbs:
+  maven: circleci/maven@1.1
+
+jobs:
+  build:
+    docker:
+      - image: "julien23/thales:latest"
+        auth:
+          username: julien23
+          password: $DOCKERHUB_PASSWORD # context / project UI env-var reference
+    steps:
+      - checkout
+      - run: "docker build -t thalesdataproject:latest ."
+      - run: "docker push julien23/thalesdataproject:latest"
+
+workflows:
+  test_and_build:
+    jobs:
+      - maven/test
+      - build
