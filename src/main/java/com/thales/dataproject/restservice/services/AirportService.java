@@ -28,10 +28,7 @@ public abstract class AirportService {
 
         connection.setRequestMethod("GET");
         connection.setRequestProperty("accept", "application/json");
-        // connection.setRequestProperty("api-key", key);
         connection.setRequestProperty("api-key", AppConfig.API_KEY);
-        // DANGER,
-        // REMOVE!!
 
         return connection.getInputStream();
 
