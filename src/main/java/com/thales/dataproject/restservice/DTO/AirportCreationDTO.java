@@ -9,6 +9,13 @@ public class AirportCreationDTO {
     private String alt;
     private String iata;
 
+    public AirportCreationDTO() {
+    }
+
+    public AirportCreationDTO(String uid) {
+        this.uid = uid;
+    }
+
     public String getUid() {
         return uid;
     }

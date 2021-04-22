@@ -11,5 +11,6 @@ RUN mvn -f /home/app/pom.xml clean package
 #
 FROM openjdk:11-jre-slim
 COPY --from=build /home/app/target/rest-service-0.0.1-SNAPSHOT.jar /usr/local/lib/rest-service.jar
+
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/usr/local/lib/rest-service.jar"]
