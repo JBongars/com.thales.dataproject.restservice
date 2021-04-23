@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -14,6 +17,8 @@ import com.thales.dataproject.restservice.DTO.SIDCreationDTO;
 import com.thales.dataproject.restservice.config.AppConfig;
 import com.thales.dataproject.restservice.models.AirportModel;
 import com.thales.dataproject.restservice.models.SIDModel;
+import com.thales.dataproject.restservice.models.WaypointAggregatedModel;
+import com.thales.dataproject.restservice.models.WaypointModel;
 
 import org.springframework.stereotype.Component;
 
@@ -63,10 +68,51 @@ public abstract class AirportService {
         return sids;
     }
 
+    public static ArrayList<SIDModel> getSTARS(AirportModel airport) throws IOException {
+        InputStream responseStream = AirportService
+                .makeGetRequest(String.format("/airac/stars/airport/%s", airport.getUid()));
+        ObjectMapper mapper = new ObjectMapper();
+
+        SIDCreationDTO[] dtoList = mapper.readValue(responseStream, SIDCreationDTO[].class);
+        ArrayList<SIDModel> sids = new ArrayList<SIDModel>();
+
+        for (int i = 0; i < dtoList.length; i++) {
+            sids.add(new SIDModel(dtoList[i]));
+        }
+
+        return sids;
+    }
+
+    public static ArrayList<WaypointAggregatedModel> sortNodesByMostCommonWithCount(ArrayList<SIDModel> nodes) {
+        HashMap<String, Integer> waypointCount = new HashMap<String, Integer>();
+
+        for (int i = 0; i < nodes.size(); i++) {
+            ArrayList<WaypointModel> waypoints = nodes.get(i).getWaypoints();
+
+            for (int j = 0; j < waypoints.size(); j++) {
+                String uid = waypoints.get(j).getUid();
+
+                waypointCount.put(uid, waypointCount.get(uid) == null ? 1 : waypointCount.get(uid) + 1);
+            }
+        }
+
+        return (ArrayList<WaypointAggregatedModel>) waypointCount.entrySet().stream()
+                .sorted(Comparator.comparing(elem -> elem.getValue()))
+                .map(elem -> new WaypointAggregatedModel(elem.getKey(), elem.getValue())).collect(Collectors.toList());
+
+    }
+
     public static ArrayList<SIDModel> getSIDWithAirportID(String id) throws IOException {
 
         AirportModel airport = new AirportModel(new AirportCreationDTO(id));
 
         return AirportService.getSID(airport);
+    }
+
+    public static ArrayList<SIDModel> getSTARWithAirportID(String id) throws IOException {
+
+        AirportModel airport = new AirportModel(new AirportCreationDTO(id));
+
+        return AirportService.getSTARS(airport);
     }
 }
