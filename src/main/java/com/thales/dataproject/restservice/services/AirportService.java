@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -91,15 +92,17 @@ public abstract class AirportService {
 
             for (int j = 0; j < waypoints.size(); j++) {
                 String uid = waypoints.get(j).getUid();
+                int count = waypointCount.getOrDefault(uid, 0);
 
-                waypointCount.put(uid, waypointCount.get(uid) == null ? 1 : waypointCount.get(uid) + 1);
+                waypointCount.put(uid, count + 1);
             }
         }
 
-        return (ArrayList<WaypointAggregatedModel>) waypointCount.entrySet().stream()
-                .sorted(Comparator.comparing(elem -> elem.getValue()))
+        ArrayList<WaypointAggregatedModel> result = (ArrayList<WaypointAggregatedModel>) waypointCount.entrySet()
+                .stream().sorted(Comparator.comparing(Map.Entry<String, Integer>::getValue).reversed())
                 .map(elem -> new WaypointAggregatedModel(elem.getKey(), elem.getValue())).collect(Collectors.toList());
 
+        return result;
     }
 
     public static ArrayList<SIDModel> getSIDWithAirportID(String id) throws IOException {
